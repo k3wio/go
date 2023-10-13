@@ -159,6 +159,7 @@ type Decoder struct {
 	// Setting:
 	//
 	//	d.Strict = false
+	//	d.IgnoreInvalidCharacters = false
 	//	d.AutoClose = xml.HTMLAutoClose
 	//	d.Entity = xml.HTMLEntity
 	//
@@ -229,6 +230,7 @@ func NewDecoder(r io.Reader) *Decoder {
 		nextByte: -1,
 		line:     1,
 		Strict:   true,
+		IgnoreInvalidCharacters:   false,
 	}
 	d.switchToReader(r)
 	return d
@@ -246,6 +248,7 @@ func NewTokenDecoder(t TokenReader) *Decoder {
 		nextByte: -1,
 		line:     1,
 		Strict:   true,
+		IgnoreInvalidCharacters:   false,
 	}
 	return d
 }
@@ -1134,6 +1137,8 @@ Input:
 	data = data[0 : len(data)-trunc]
 
 	// Inspect each rune for being a disallowed character.
+	//
+	// See the [Decoder.IgnoreInvalidCharacters] fields' documentation.
 	buf := data
 	for len(buf) > 0 {
 		r, size := utf8.DecodeRune(buf)
