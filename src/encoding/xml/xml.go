@@ -169,6 +169,11 @@ type Decoder struct {
 	// Such tags are recorded with the unknown prefix as the name space URL.
 	Strict bool
 
+	// IgnoreInvalidCharacters mode ignores entities outside the XML Character
+	// Range, per the Char production of https://www.xml.com/axml/testaxml.htm,
+	// Section 2.2 Characters.
+	IgnoreInvalidCharacters bool
+
 	// When Strict == false, AutoClose indicates a set of elements to
 	// consider closed immediately after they are opened, regardless
 	// of whether an end element is present.
@@ -1137,7 +1142,7 @@ Input:
 			return nil
 		}
 		buf = buf[size:]
-		if !isInCharacterRange(r) {
+		if !d.IgnoreInvalidCharacters && !isInCharacterRange(r) {
 			d.err = d.syntaxError(fmt.Sprintf("illegal character code %U", r))
 			return nil
 		}
